@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>教科書Units 5-7 テスト</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700&display=swap');
+        :root {
+            --primary-color: #007bff;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --secondary-color: #6c757d;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --bg-color: #f4f7f6;
+            --border-color: #dee2e6;
+        }
+        body {
+            font-family: 'M PLUS Rounded 1c', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: var(--bg-color);
+            color: var(--dark-color);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            overflow-x: hidden;
+            font-size: 16px;
+        }
+        .container {
+            max-width: 700px;
+            width: 100%;
+            background: #fff;
+            padding: 20px 30px 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+            margin-top: 20px;
+            position: relative;
+        }
+        h1, h2, h3 {
+            text-align: center;
+        }
+        h1 {
+            color: var(--dark-color);
+            margin: 10px 0 20px;
+        }
+        h2 {
+            color: var(--dark-color);
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+        h3 {
+            font-size: 1.2em;
+            color: var(--dark-color);
+            margin-bottom: 15px;
+        }
+        .content {
+            display: none;
+        }
+        .content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* Home Screen Styles */
+        .settings-group {
+            margin-bottom: 30px;
+        }
+        .settings-group h3 {
+            border-bottom: 2px solid var(--light-color);
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        .selection-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .selection-btn {
+            padding: 12px 20px;
+            font-size: 1.1em;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 2px solid var(--border-color);
+            background-color: #fff;
+            color: var(--dark-color);
+            flex-grow: 1;
+        }
+        .selection-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        #start-quiz-btn {
+            width: 100%;
+            padding: 20px;
+            font-size: 1.5em;
+            font-weight: bold;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 2px solid var(--success-color);
+            background-color: var(--success-color);
+            color: white;
+            margin-top: 20px;
+        }
+        #start-quiz-btn:hover {
+            background-color: #218838;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+        }
+
+        /* Quiz Area Styles */
+        #quiz-container {
+            text-align: center;
+            position: relative;
+            min-height: 350px;
+        }
+        #question-text, #unscramble-context {
+            font-size: 1.5em;
+            margin-bottom: 25px;
+            padding: 15px;
+            background-color: var(--light-color);
+            border-radius: 8px;
+        }
+        .answer-buttons {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 20px;
+            grid-template-columns: 1fr;
+        }
+        .answer-button {
+            padding: 18px;
+            font-size: 1.3em;
+            font-weight: bold;
+            background-color: #fff;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .answer-button:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+            border-color: var(--primary-color);
+        }
+        .answer-button:disabled {
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+        .correct-answer {
+            border-color: var(--success-color) !important;
+            background-color: #e8f5e9 !important;
+            transform: scale(1.05);
+        }
+        .wrong-answer {
+            border-color: var(--danger-color) !important;
+            background-color: #ffebee !important;
+        }
+        #explanation {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 1.05em;
+            min-height: 50px;
+            opacity: 0;
+            transition: opacity 0.4s;
+            font-weight: bold;
+        }
+        #explanation.show {
+            opacity: 1;
+        }
+        #explanation.correct {
+            background-color: #e8f5e9;
+            color: #1c5c20;
+        }
+        #explanation.incorrect {
+            background-color: #ffebee;
+            color: #b71c1c;
+        }
+
+        /* Unscramble Styles */
+        #user-answer-display {
+            border: 2px dashed var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            min-height: 50px;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        #word-fragments {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .word-fragment {
+            padding: 10px 15px;
+            font-size: 1.2em;
+            background-color: #fff;
+            border: 2px solid var(--secondary-color);
+            color: var(--secondary-color);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .word-fragment:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+        .unscramble-controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        /* Results Screen Styles */
+        #quiz-finished {
+            padding: 20px 0;
+            text-align: center;
+        }
+        #final-score {
+            font-size: 1.8em;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .result-buttons {
+            margin-top: 25px;
+            text-align: center;
+        }
+        .result-buttons button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1em;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div id="main-content">
+            <div id="home" class="content active">
+                <h1>教科書 Units 5-7 テスト</h1>
+                <div class="settings-group">
+                    <h3>1. Unitを選ぶ</h3>
+                    <div class="selection-buttons" id="unit-selection">
+                        <button class="selection-btn active" data-unit="unit5">Unit 5</button>
+                        <button class="selection-btn" data-unit="unit6">Unit 6</button>
+                        <button class="selection-btn" data-unit="unit7">Unit 7</button>
+                    </div>
+                </div>
+                <div class="settings-group">
+                    <h3>2. 出題順を選ぶ</h3>
+                    <div class="selection-buttons" id="order-selection">
+                        <button class="selection-btn active" data-order="textbook">教科書順</button>
+                        <button class="selection-btn" data-order="random">ランダム</button>
+                    </div>
+                </div>
+                <button id="start-quiz-btn">テストを始める</button>
+            </div>
+
+            <div id="quiz-area" class="content">
+                <div id="quiz-header" style="text-align: center; margin-bottom: 15px; font-size: 1.2em; font-weight: bold;"></div>
+                <div id="quiz-container"></div>
+            </div>
+
+            <div id="quiz-finished" class="content">
+                <h2 id="result-title">テスト完了！</h2>
+                <p id="final-score"></p>
+                <div class="result-buttons">
+                    <button id="go-to-home-btn">ホームに戻る</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+const allQuizData = {
+    unit5: [
+        { type: 'fill-in', id: '5-1-A', question: "My friend has started a travel agency in the ( A ) area of Helsinki...", choices: ['improve', 'surrounding', 'required', 'apply for', 'facilitated'], answer: 'surrounding' },
+        { type: 'fill-in', id: '5-1-B', question: "My Finnish language skills are not so poor but I need to ( B ) for business use.", choices: ['improve', 'surrounding', 'required', 'apply for', 'facilitated'], answer: 'improve' },
+        { type: 'fill-in', id: '5-1-C', question: "Business course content is ( C ) with Finnish language instruction.", choices: ['improve', 'surrounding', 'required', 'apply for', 'facilitated'], answer: 'facilitated' },
+        { type: 'fill-in', id: '5-1-D', question: "...it's OK to ( D ) the programme on their web page.", choices: ['improve', 'surrounding', 'required', 'apply for', 'facilitated'], answer: 'apply for' },
+        { type: 'fill-in', id: '5-1-E', question: "You are ( E ) to write a 500 word introduction in the Finnish language.", choices: ['improve', 'surrounding', 'required', 'apply for', 'facilitated'], answer: 'required' },
+        { type: 'unscramble', id: '5-2-A', context: "Reiko's friend has started a travel agency... and she has [ ... ] to join her business after finishing university.", words: ['asked', 'me'], answer: "asked me" },
+        { type: 'unscramble', id: '5-2-B', context: "That's perfect! I am [ ... ] the programme.", words: ['more', 'than', 'curious', 'to', 'participate', 'in'], answer: "more than curious to participate in" },
+        { type: 'tf', id: '5-3-1', question: "Reiko's friend wants her to join her business.", answer: 'T' },
+        { type: 'tf', id: '5-3-2', question: "Pirjo suggests that Reiko should join the programme, where she must study with Finnish students.", answer: 'F' },
+        { type: 'tf', id: '5-3-3', question: "In the programme course contents are taught in English.", answer: 'F' }
+    ],
+    unit6: [
+        { type: 'fill-in', id: '6-1-A', question: "...and has traditionally had a broad range of publicity, ( A ) income support, as well as health care and social services.", choices: ['advantage', 'qualified', 'unemployed', 'provided', 'relating to'], answer: 'provided' },
+        { type: 'fill-in', id: '6-1-B', question: "...the government is positively involved in getting ( B ) people back to work through training...", choices: ['advantage', 'qualified', 'unemployed', 'provided', 'relating to'], answer: 'unemployed' },
+        { type: 'fill-in', id: '6-1-C', question: "Specific jobs ( C ) engineering and the IT fields often recruit foreign employees.", choices: ['advantage', 'qualified', 'unemployed', 'provided', 'relating to'], answer: 'relating to' },
+        { type: 'fill-in', id: '6-1-D', question: "Yuriko: I am ( D ) in information processing, and am thinking of working in Sweden.", choices: ['advantage', 'qualified', 'unemployed', 'provided', 'relating to'], answer: 'qualified' },
+        { type: 'fill-in', id: '6-1-E', question: "...speaking English will not give you much of an ( E ) over Swedes.", choices: ['advantage', 'qualified', 'unemployed', 'provided', 'relating to'], answer: 'advantage' },
+        { type: 'unscramble', id: '6-2-A', context: "My class, \"Cross-cultural Understanding,\" [ ... ] concerning the working conditions in a foreign country.", words: ['requires', 'us', 'to', 'give', 'a', 'presentation'], answer: "requires us to give a presentation" },
+        { type: 'unscramble', id: '6-2-B', context: "You might also [ ... ] such as northern Sweden...", words: ['consider', 'going', 'to', 'less', 'populated', 'regions'], answer: "consider going to less populated regions" },
+        { type: 'tf', id: '6-3-1', question: "Yuriko will probably move to Sweden in the near future.", answer: 'F' },
+        { type: 'tf', id: '6-3-2', question: "Being fluent in English greatly works to an immigrant's advantage when applying for a job in Sweden.", answer: 'F' },
+        { type: 'tf', id: '6-3-3', question: "The labor market in Sweden is open to immigrants.", answer: 'T' }
+    ],
+    unit7: [
+        { type: 'fill-in', id: '7-1-A', question: "Which company do you have in ( A ) as your future prospective place of employment?", choices: ['broaden', 'mind', 'originally', 'pity', 'welcome'], answer: 'mind' },
+        { type: 'fill-in', id: '7-1-B', question: "...large-scale companies which were ( B ) established as state companies, such as Gazprom and LUKOIL.", choices: ['broaden', 'mind', 'originally', 'pity', 'welcome'], answer: 'originally' },
+        { type: 'fill-in', id: '7-1-C', question: "However, most Japanese students don't seem to ( C ) that trend.", choices: ['broaden', 'mind', 'originally', 'pity', 'welcome'], answer: 'welcome' },
+        { type: 'fill-in', id: '7-1-D', question: "Yuri: That's a ( D )! I think working at foreign companies is fun...", choices: ['broaden', 'mind', 'originally', 'pity', 'welcome'], answer: 'pity' },
+        { type: 'fill-in', id: '7-1-E', question: "...gives you an opportunity to ( E ) your outlook.", choices: ['broaden', 'mind', 'originally', 'pity', 'welcome'], answer: 'broaden' },
+        { type: 'unscramble', id: '7-2-A', context: "Kanako: Now I understand [ ... ] Japanese and German.", words: ['why', "you've", 'been', 'learning', 'to', 'speak'], answer: "why you've been learning to speak" },
+        { type: 'unscramble', id: '7-2-B', context: "That is what we call the onset of borderless job hunting [ ... ], too.", words: ['which', 'is', 'starting', 'to', 'become', 'popular', 'in', 'Japan'], answer: "which is starting to become popular in Japan" },
+        { type: 'tf', id: '7-3-1', question: "Yuri is planning to work for an automobile company outside of Russia.", answer: 'F' },
+        { type: 'tf', id: '7-3-2', question: "Huge Russian companies are still more popular than foreign companies among Russian students.", answer: 'T' },
+        { type: 'tf', id: '7-3-3', question: "Kanako is willing to work at a foreign company.", answer: 'F' }
+    ]
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+    // App State
+    let state = {
+        selectedUnit: 'unit5',
+        selectedOrder: 'textbook',
+        currentQuiz: [],
+        currentQuestionIndex: 0,
+        score: 0,
+        isQuizActive: false,
+        answerTimer: null,
+        userUnscrambleAnswer: []
+    };
+
+    // DOM Elements
+    const elements = {
+        home: document.getElementById('home'),
+        quizArea: document.getElementById('quiz-area'),
+        quizFinished: document.getElementById('quiz-finished'),
+        unitSelection: document.getElementById('unit-selection'),
+        orderSelection: document.getElementById('order-selection'),
+        startQuizBtn: document.getElementById('start-quiz-btn'),
+        quizHeader: document.getElementById('quiz-header'),
+        quizContainer: document.getElementById('quiz-container'),
+        finalScore: document.getElementById('final-score'),
+        resultTitle: document.getElementById('result-title'),
+        goToHomeBtn: document.getElementById('go-to-home-btn')
+    };
+
+    // --- Event Listeners ---
+    elements.unitSelection.addEventListener('click', (e) => handleSelection(e, 'unit'));
+    elements.orderSelection.addEventListener('click', (e) => handleSelection(e, 'order'));
+    elements.startQuizBtn.addEventListener('click', startQuiz);
+    elements.goToHomeBtn.addEventListener('click', showHome);
+
+    function handleSelection(event, type) {
+        if (!event.target.classList.contains('selection-btn')) return;
+        const group = type === 'unit' ? elements.unitSelection : elements.orderSelection;
+        group.querySelectorAll('.selection-btn').forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+        if (type === 'unit') state.selectedUnit = event.target.dataset.unit;
+        if (type === 'order') state.selectedOrder = event.target.dataset.order;
+    }
+    
+    function showContent(contentId) {
+        document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+        document.getElementById(contentId).classList.add('active');
+    }
+
+    function showHome() {
+        state.isQuizActive = false;
+        clearTimeout(state.answerTimer);
+        showContent('home');
+    }
+
+    // --- Quiz Logic ---
+    function startQuiz() {
+        const questionData = allQuizData[state.selectedUnit];
+        state.currentQuiz = state.selectedOrder === 'random' ? [...questionData].sort(() => 0.5 - Math.random()) : [...questionData];
+        state.currentQuestionIndex = 0;
+        state.score = 0;
+        state.isQuizActive = true;
+        showContent('quiz-area');
+        drawQuestion();
+    }
+
+    function drawQuestion() {
+        if (!state.isQuizActive || state.currentQuestionIndex >= state.currentQuiz.length) {
+            showQuizResult();
+            return;
+        }
+
+        const question = state.currentQuiz[state.currentQuestionIndex];
+        elements.quizHeader.textContent = `第 ${state.currentQuestionIndex + 1} 問 / ${state.currentQuiz.length} 問`;
+        
+        switch(question.type) {
+            case 'fill-in':
+                drawFillInQuestion(question);
+                break;
+            case 'unscramble':
+                drawUnscrambleQuestion(question);
+                break;
+            case 'tf':
+                drawTFQuestion(question);
+                break;
+        }
+    }
+    
+    function drawFillInQuestion(q) {
+        let buttonsHTML = '';
+        q.choices.forEach(choice => {
+            buttonsHTML += `<button class="answer-button" data-answer="${choice}">${choice}</button>`;
+        });
+        elements.quizContainer.innerHTML = `
+            <div id="question-text">${q.question}</div>
+            <div class="answer-buttons">${buttonsHTML}</div>
+            <div id="explanation"></div>
+        `;
+        document.querySelectorAll('.answer-button').forEach(btn => {
+            btn.addEventListener('click', () => checkAnswer(btn.dataset.answer, q));
+        });
+    }
+
+    function drawTFQuestion(q) {
+        elements.quizContainer.innerHTML = `
+            <div id="question-text">${q.question}</div>
+            <div class="answer-buttons">
+                <button class="answer-button" data-answer="T">True</button>
+                <button class="answer-button" data-answer="F">False</button>
+            </div>
+            <div id="explanation"></div>
+        `;
+        document.querySelectorAll('.answer-button').forEach(btn => {
+            btn.addEventListener('click', () => checkAnswer(btn.dataset.answer, q));
+        });
+    }
+
+    function drawUnscrambleQuestion(q) {
+        state.userUnscrambleAnswer = [];
+        const shuffledWords = [...q.words].sort(() => 0.5 - Math.random());
+        let fragmentsHTML = '';
+        shuffledWords.forEach(word => {
+            fragmentsHTML += `<button class="word-fragment">${word}</button>`;
+        });
+        elements.quizContainer.innerHTML = `
+            <div id="unscramble-context">${q.context}</div>
+            <div id="user-answer-display"></div>
+            <div id="word-fragments">${fragmentsHTML}</div>
+            <div class="unscramble-controls">
+                <button class="answer-button" id="check-unscramble-btn">決定</button>
+                <button class="answer-button" id="reset-unscramble-btn" style="background-color: var(--secondary-color); color: white;">リセット</button>
+            </div>
+            <div id="explanation"></div>
+        `;
+
+        const userAnswerDisplay = document.getElementById('user-answer-display');
+        const wordFragmentsContainer = document.getElementById('word-fragments');
+
+        wordFragmentsContainer.addEventListener('click', (e) => {
+            if (e.target.classList.contains('word-fragment') && !e.target.disabled) {
+                state.userUnscrambleAnswer.push(e.target.textContent);
+                userAnswerDisplay.textContent = state.userUnscrambleAnswer.join(' ');
+                e.target.disabled = true;
+            }
+        });
+
+        document.getElementById('reset-unscramble-btn').addEventListener('click', () => {
+            state.userUnscrambleAnswer = [];
+            userAnswerDisplay.textContent = '';
+            document.querySelectorAll('.word-fragment').forEach(btn => btn.disabled = false);
+        });
+        
+        document.getElementById('check-unscramble-btn').addEventListener('click', () => {
+             checkAnswer(state.userUnscrambleAnswer.join(' '), q);
+        });
+    }
+
+    function checkAnswer(selectedAnswer, questionData) {
+        if (!state.isQuizActive) return;
+        clearTimeout(state.answerTimer);
+
+        const isCorrect = selectedAnswer === questionData.answer;
+        const explanationEl = document.getElementById('explanation');
+        
+        document.querySelectorAll('.answer-button, .word-fragment, #check-unscramble-btn, #reset-unscramble-btn').forEach(btn => btn.disabled = true);
+
+        if (isCorrect) {
+            state.score++;
+            explanationEl.innerHTML = '<b>正解！</b>';
+            explanationEl.className = 'correct';
+        } else {
+            explanationEl.innerHTML = `<b>不正解...</b> 正解は: <b>${questionData.answer}</b>`;
+            explanationEl.className = 'incorrect';
+        }
+        
+        explanationEl.classList.add('show');
+        
+        // Highlight correct/wrong buttons
+        if (questionData.type !== 'unscramble') {
+            document.querySelectorAll('.answer-button').forEach(btn => {
+                if(btn.dataset.answer === questionData.answer) {
+                    btn.classList.add('correct-answer');
+                } else if (btn.dataset.answer === selectedAnswer) {
+                    btn.classList.add('wrong-answer');
+                }
+            });
+        }
+
+
+        state.currentQuestionIndex++;
+        state.answerTimer = setTimeout(drawQuestion, 2000);
+    }
+    
+    function showQuizResult() {
+        state.isQuizActive = false;
+        const finalScore = state.score;
+        const totalQuestions = state.currentQuiz.length;
+        
+        elements.finalScore.textContent = `正解数: ${finalScore} / ${totalQuestions}`;
+        elements.resultTitle.textContent = (finalScore === totalQuestions) ? "全問正解！おめでとうございます！" : "テスト完了！";
+        showContent('quiz-finished');
+    }
+
+    showHome(); // Initial call
+});
+
+</script>
+</body>
+</html>
